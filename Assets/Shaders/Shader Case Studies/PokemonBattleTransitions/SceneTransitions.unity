@@ -1692,8 +1692,8 @@ GameObject:
   - component: {fileID: 418866544}
   - component: {fileID: 418866543}
   - component: {fileID: 418866542}
-  - component: {fileID: 418866545}
   - component: {fileID: 418866546}
+  - component: {fileID: 418866545}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1775,10 +1775,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 418866541}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b93239890efaeb94cbdc59f85646d1eb, type: 3}
+  m_Script: {fileID: 11500000, guid: 4824809123a4cf94f9398b671e770ef5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EffectMaterial: {fileID: 2100000, guid: 8312b5a7037a1414291d83c16f70bd06, type: 2}
+  EffectMaterial: {fileID: 2100000, guid: 1986c66a82c0817478cc6fbaecd0e690, type: 2}
 --- !u!114 &418866546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1792,8 +1792,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BlurMaterial: {fileID: 2100000, guid: 28a573765eb71a14da2eaf655cd14a38, type: 2}
-  Iterations: 1
-  DownRes: 1
+  Iterations: 0
+  DownRes: 0
 --- !u!1 &420240189
 GameObject:
   m_ObjectHideFlags: 0

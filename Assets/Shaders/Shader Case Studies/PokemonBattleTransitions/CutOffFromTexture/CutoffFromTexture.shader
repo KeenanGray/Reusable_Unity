@@ -1,25 +1,24 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Shaders101/Box Blur"
+Shader "Studies/MiddleOut"
 {
     Properties
     {
         _MainTex("Texture", 2D) = "white" {}
+        _SampleTex("Sample Tex", 2D) = "white" {}
         _Color("Color", Color) = (1,1,1,1)
-        _Magnitude("Magnitude",Range(0,0.1)) = 1
+        _Cutoff("Cut off",Range(0,1)) = .5
     }
 
     SubShader
     {
         Tags
         {
-            "Queue" = "Transparent"
+            "RenderType" = "Opaque"
         }
         
         Pass
         {
-            Blend SrcAlpha OneMinusSrcAlpha
-
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -45,27 +44,19 @@ Shader "Shaders101/Box Blur"
                 o.uv = v.uv;
                 return o;
             }
-
             sampler2D _MainTex;
-            //The actual size of apixel
-            float4 _MainTex_TexelSize;
+            sampler2D _SampleTex;
             float4 _Color;
-            float _Magnitude;
-
-            float4 box(sampler2D tex, float2 uv, float4 size)
-            {
-                //average the 9 cells around the pixel
-                float4 c = tex2D(tex, uv+float2(-size.x,size.y)) +  tex2D(tex, uv+float2(0,size.y)) + tex2D(tex, uv+float2(size.x,size.y))
-                + tex2D(tex, uv+float2(-size.x,0)) +  tex2D(tex, uv+float2(0,0)) + tex2D(tex, uv+float2(size.x,0))
-                + tex2D(tex, uv+float2(-size.x,-size.y)) +  tex2D(tex, uv+float2(0,-size.y)) + tex2D(tex, uv+float2(size.x,-size.y));
-                //return the average
-                return c/9;
-            }
+            float _Cutoff;
 
             float4 frag(v2f i) : SV_Target
-            {
-                float4 color = box(_MainTex, i.uv, _MainTex_TexelSize) * _Color;
-                return color;
+            {              
+                fixed4 transit = tex2D(_SampleTex,i.uv);
+
+                if(transit.b <= _Cutoff)
+                return _Color;
+                
+                return tex2D(_MainTex, i.uv);
             };
             ENDCG
         }
