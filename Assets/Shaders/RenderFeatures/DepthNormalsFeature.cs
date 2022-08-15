@@ -15,13 +15,20 @@ public class DepthNormalsFeature : ScriptableRendererFeature
         string m_ProfilerTag = "DepthNormals Prepass";
         ShaderTagId m_ShaderTagId = new ShaderTagId("DepthOnly");
 
-        public DepthNormalsPass(RenderQueueRange renderQueueRange, LayerMask layerMask, Material material)
+        public DepthNormalsPass(
+            RenderQueueRange renderQueueRange,
+            LayerMask layerMask,
+            Material material
+        )
         {
             m_FilteringSettings = new FilteringSettings(renderQueueRange, layerMask);
             depthNormalsMaterial = material;
         }
 
-        public void Setup(RenderTextureDescriptor baseDescriptor, RenderTargetHandle depthAttachmentHandle)
+        public void Setup(
+            RenderTextureDescriptor baseDescriptor,
+            RenderTargetHandle depthAttachmentHandle
+        )
         {
             this.depthAttachmentHandle = depthAttachmentHandle;
             baseDescriptor.colorFormat = RenderTextureFormat.ARGB32;
@@ -34,7 +41,10 @@ public class DepthNormalsFeature : ScriptableRendererFeature
         // When empty this render pass will render to the active camera render target.
         // You should never call CommandBuffer.SetRenderTarget. Instead call <c>ConfigureTarget</c> and <c>ConfigureClear</c>.
         // The render pipeline will ensure target setup and clearing happens in an performance manner.
-        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        public override void Configure(
+            CommandBuffer cmd,
+            RenderTextureDescriptor cameraTextureDescriptor
+        )
         {
             cmd.GetTemporaryRT(depthAttachmentHandle.id, descriptor, FilterMode.Point);
             ConfigureTarget(depthAttachmentHandle.Identifier());
@@ -45,7 +55,10 @@ public class DepthNormalsFeature : ScriptableRendererFeature
         // Use <c>ScriptableRenderContext</c> to issue drawing commands or execute command buffers
         // https://docs.unity3d.com/ScriptReference/Rendering.ScriptableRenderContext.html
         // You don't have to call ScriptableRenderContext.submit, the render pipeline will call it at specific points in the pipeline.
-        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
+        public override void Execute(
+            ScriptableRenderContext context,
+            ref RenderingData renderingData
+        )
         {
             CommandBuffer cmd = CommandBufferPool.Get(m_ProfilerTag);
 
@@ -55,21 +68,25 @@ public class DepthNormalsFeature : ScriptableRendererFeature
                 cmd.Clear();
 
                 var sortFlags = renderingData.cameraData.defaultOpaqueSortFlags;
-                var drawSettings = CreateDrawingSettings(m_ShaderTagId, ref renderingData, sortFlags);
+                var drawSettings = CreateDrawingSettings(
+                    m_ShaderTagId,
+                    ref renderingData,
+                    sortFlags
+                );
                 drawSettings.perObjectData = PerObjectData.None;
-
 
                 ref CameraData cameraData = ref renderingData.cameraData;
                 Camera camera = cameraData.camera;
-                if (cameraData.isStereoEnabled)
+                if (UnityEngine.XR.XRSettings.enabled)
                     context.StartMultiEye(camera);
-
 
                 drawSettings.overrideMaterial = depthNormalsMaterial;
 
-
-                context.DrawRenderers(renderingData.cullResults, ref drawSettings,
-                    ref m_FilteringSettings);
+                context.DrawRenderers(
+                    renderingData.cullResults,
+                    ref drawSettings,
+                    ref m_FilteringSettings
+                );
 
                 cmd.SetGlobalTexture("_CameraDepthNormalsTexture", depthAttachmentHandle.id);
             }
@@ -95,7 +112,9 @@ public class DepthNormalsFeature : ScriptableRendererFeature
 
     public override void Create()
     {
-        depthNormalsMaterial = CoreUtils.CreateEngineMaterial("Hidden/Internal-DepthNormalsTexture");
+        depthNormalsMaterial = CoreUtils.CreateEngineMaterial(
+            "Hidden/Internal-DepthNormalsTexture"
+        );
         depthNormalsPass = new DepthNormalsPass(RenderQueueRange.opaque, -1, depthNormalsMaterial);
         depthNormalsPass.renderPassEvent = RenderPassEvent.AfterRenderingPrePasses;
         depthNormalsTexture.Init("_CameraDepthNormalsTexture");
@@ -103,9 +122,15 @@ public class DepthNormalsFeature : ScriptableRendererFeature
 
     // Here you can inject one or multiple render passes in the renderer.
     // This method is called when setting up the renderer once per-camera.
-    public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
+    public override void AddRenderPasses(
+        ScriptableRenderer renderer,
+        ref RenderingData renderingData
+    )
     {
-        depthNormalsPass.Setup(renderingData.cameraData.cameraTargetDescriptor, depthNormalsTexture);
+        depthNormalsPass.Setup(
+            renderingData.cameraData.cameraTargetDescriptor,
+            depthNormalsTexture
+        );
         renderer.EnqueuePass(depthNormalsPass);
     }
 }
