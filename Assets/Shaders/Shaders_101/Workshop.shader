@@ -1,25 +1,14 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "Shaders101/Luminance"
+Shader "Custom/Workshop"
 {
     Properties
     {
-        _MainTex("Texture", 2D) = "white" {}
-        _Color("Color", Color) = (1,1,1,1)
+        _Color ("Color", Color) = (1,1,1,1)
+        _MainTex("Texture", 2D) = "white"
     }
-
     SubShader
     {
-        Tags
-        {
-            "Queue" = "Transparent"
-        }
-        
-        Pass
-        {
-         //   Blend SrcAlpha OneMinusSrcAlpha
+        Tags { "RenderType"="Opaque" }
+        Pass{
 
             CGPROGRAM
             #pragma vertex vert
@@ -32,6 +21,9 @@ Shader "Shaders101/Luminance"
                 float4 vertex: POSITION;
                 float2 uv : TEXCOORD0;
             };
+
+            fixed4 _Color;
+            sampler2D _MainTex;
 
             struct v2f
             {
@@ -47,17 +39,14 @@ Shader "Shaders101/Luminance"
                 return o;
             }
 
-            sampler2D _MainTex;
-            float4 _Color;
-
             float4 frag(v2f i) : SV_Target
             {
                 float4 color = tex2D(_MainTex, i.uv);
-                float4 luminance = 0.3 * color.r + 0.59 * color.g + 0.11 * color.b;
-
-                return float4(luminance.r,luminance.g,luminance.b, color.a) * _Color;
+                return color;
             };
+            
             ENDCG
         }
     }
+    FallBack "Diffuse"
 }

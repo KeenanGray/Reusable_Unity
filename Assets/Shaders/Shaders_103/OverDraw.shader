@@ -3,7 +3,8 @@
 Shader "Shaders103/OverDraw"
 {
     Properties
-    {
+    {  
+        _Color("Color", Color) = (1,1,1,1)
     }
 
    
@@ -11,7 +12,7 @@ Shader "Shaders103/OverDraw"
     {
         Tags
         {
-            "Queue"="Transparent"
+            "Queue"="Geometry"
         }
         
         ZTest Always
@@ -39,6 +40,8 @@ Shader "Shaders103/OverDraw"
                 float depth : DEPTH;
             };
 
+            float4 _Color;
+
             v2f vert(appdata v)
             {
                 v2f o;
@@ -50,7 +53,7 @@ Shader "Shaders103/OverDraw"
 
             float4 frag(v2f i) : SV_Target
             {
-                return _OverDrawColor;
+                return _Color;
             };
             ENDCG
         }
